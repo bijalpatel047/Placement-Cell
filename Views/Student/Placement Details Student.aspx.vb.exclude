@@ -1,0 +1,6 @@
+﻿
+Partial Class Views_Student_Placement_Details
+    Inherits System.Web.UI.Page
+
+   
+End Class

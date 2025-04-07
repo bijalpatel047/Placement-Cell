@@ -1,0 +1,2 @@
+﻿- How to send Email To more than 1 Person of Gridview at a time?? (admin/e-mail NOtifiaction)
+- Remain Whole WebPage Of NewsFeed (Design, Code)(Admin / NewsFeed)

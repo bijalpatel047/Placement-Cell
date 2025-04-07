@@ -1,0 +1,104 @@
+﻿Imports System.Data.SqlClient
+Partial Class Views_Company_Add_Placement_Details
+    Inherits System.Web.UI.Page
+    Protected Sub lbl_click_Here_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles lbl_click_Here.Click
+        Panel1.Visible = True
+    End Sub
+    Protected Sub ddl_course_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ddl_course.SelectedIndexChanged
+        ddl_year.DataBind()
+    End Sub
+    Protected Sub ddl_company_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ddl_company.SelectedIndexChanged
+        ddl_visit_year.DataBind()
+    End Sub
+    Protected Sub InsertCancelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+        Panel1.Visible = False
+    End Sub
+
+    Protected Sub InsertButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles InsertButton.Click
+        Try
+            'ID Generate......'
+            Dim connection As New ConnectionUtility
+            connection.Add_Conn()
+            Dim str1 As String
+
+            str1 = "select isnull(count(Placement_Id),0) + 1 from Placements"
+
+            Dim cmd1 As New SqlCommand(str1, connection.conn)
+            Dim Id As Integer = DirectCast(cmd1.ExecuteScalar(), Int32)
+            connection.conn.Close()
+
+            'New Connection..'
+            Dim cnn As New ConnectionUtility
+            cnn.Add_Conn()
+            Dim str As String
+            Dim ans As Integer
+
+            Dim flag1 As Integer
+            If (Offer_Letter_IssuedCheckBox2.Checked = True) Then
+                flag1 = 1
+            Else
+                flag1 = 0
+            End If
+
+            Dim flag2 As Integer
+            If (Salary_OfferedCheckBox.Checked = True) Then
+                flag2 = 1
+            Else
+                flag2 = 0
+            End If
+
+            Dim flag3 As Integer
+            If (Project_OfferedCheckBox.Checked = True) Then
+                flag3 = 1
+            Else
+                flag3 = 0
+            End If
+
+            Dim flag4 As Integer
+            If (Stippend_OfferedCheckBox.Checked = True) Then
+                flag4 = 1
+            Else
+                flag4 = 0
+            End If
+
+            str = "INSERT INTO Placements VALUES ('" & "P_" & Id & "' ,'" & ddl_login_id.SelectedValue & "' , '" & ddl_arrival_id.SelectedValue & "' , " & flag1 & " , " & Letter_Issued_DateTextBox.Text & " , " & flag2 & " , " & SalaryTextBox.Text & " , '" & DesignationTextBox.Text & "' , " & Date_of_JoinTextBox.Text & " , " & flag3 & " , " & flag4 & " , " & StipendTextBox.Text & " , '" & RemarkTextBox.Text & "')"
+            Dim cmd As New SqlCommand(str, cnn.conn)
+            ans = cmd.ExecuteNonQuery
+            cnn.conn.Close()
+            lbl_reply.Visible = True
+            lbl_reply.Text = ans & " Record Registerd successfully"
+        Catch ex As Exception
+            lbl_reply.Visible = True
+            lbl_reply.Text = "Error :' " & ex.ToString & "' "
+        End Try
+
+        ddl_login_id.SelectedValue = ddl_login_id.Items.Item(0).Text
+        ddl_arrival_id.SelectedValue = ddl_arrival_id.Items.Item(0).Text
+        Offer_Letter_IssuedCheckBox2.Checked = True
+        Letter_Issued_DateTextBox.Text = ""
+        Salary_OfferedCheckBox.Checked = True
+        SalaryTextBox.Text = ""
+        DesignationTextBox.Text = ""
+        Date_of_JoinTextBox.Text = ""
+        Project_OfferedCheckBox.Checked = True
+        Stippend_OfferedCheckBox.Checked = True
+        StipendTextBox.Text = ""
+        RemarkTextBox.Text = ""
+    End Sub
+
+    Protected Sub InsertCancelButton_Click1(ByVal sender As Object, ByVal e As System.EventArgs) Handles InsertCancelButton.Click
+        ddl_login_id.SelectedValue = ddl_login_id.Items.Item(0).Text
+        ddl_arrival_id.SelectedValue = ddl_arrival_id.Items.Item(0).Text
+        Offer_Letter_IssuedCheckBox2.Checked = True
+        Letter_Issued_DateTextBox.Text = ""
+        Salary_OfferedCheckBox.Checked = True
+        SalaryTextBox.Text = ""
+        DesignationTextBox.Text = ""
+        Date_of_JoinTextBox.Text = ""
+        Project_OfferedCheckBox.Checked = True
+        Stippend_OfferedCheckBox.Checked = True
+        StipendTextBox.Text = ""
+        RemarkTextBox.Text = ""
+
+    End Sub
+End Class

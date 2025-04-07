@@ -1,0 +1,138 @@
+﻿Imports System
+Imports System.Collections.Generic
+Imports System.Linq
+Imports System.Web
+Imports System.Web.UI
+Imports System.Web.UI.WebControls
+Imports Trirand.Web.UI.WebControls
+Imports System.IO
+Imports System.Data
+Imports iTextSharp.text
+Imports iTextSharp.text.pdf
+Imports System.Data.SqlClient
+Namespace JQSuiteASPNETExample.examples.grid.exporting.pdf
+    Partial Public Class _default
+        Inherits System.Web.UI.Page
+        'Protected Sub Page_Load(ByVal send As Object, ByVal args As EventArgs)
+        '    ' If JQGrid1.AjaxCallBackMode <> AjaxCallBackMode.None Then
+        '    'Session("gridFilterPageState") = 
+
+        '    '' JQGrid1.GetState()
+        '    ' End If
+        'End Sub
+        Protected Sub JQGrid1_Searching(ByVal sender As Object, ByVal e As Trirand.Web.UI.WebControls.JQGridSearchEventArgs)
+            If e.SearchString = "[All]" Then
+                e.Cancel = True
+            End If
+        End Sub
+        Protected Sub ExportToPDFButton_Click(ByVal sender As Object, ByVal e As EventArgs)
+            Dim gridState As JQGridState = TryCast(Session("gridFilterPageState"), JQGridState)
+            Select Case ExportType.SelectedValue
+                Case "1"
+                    Try
+                        JQGrid1.ExportSettings.ExportDataRange = ExportDataRange.All
+                        Dim dt As DataTable = JQGrid1.GetExportData()
+                        ExportToPDF(dt)
+                        '    JQGrid1.DataSource = GetData()
+                        '    Dim dt As DataTable = GetData()
+                        '    ExportToPDF(dt)
+                        '    JQGrid1.DataBind()
+
+                    Catch ex As Exception
+                        MsgBox(ex.ToString)
+                    End Try
+
+                    Exit Select
+             
+            End Select
+        End Sub
+        Private Sub DataCallBack(ByVal dt As DataTable)
+            ExportToPDF(dt)
+        End Sub
+        Private Sub ExportToPDF(ByVal dt As DataTable)
+            Try
+
+                Dim pdfDoc As New Document()
+                Dim pdfStream As New MemoryStream()
+                Dim pdfWriter As PdfWriter = pdfWriter.GetInstance(pdfDoc, pdfStream)
+                pdfDoc.Open()
+                pdfDoc.NewPage()
+                Dim font8 As Font = FontFactory.GetFont("ARIAL", 7)
+                Dim PdfTable As New PdfPTable(dt.Columns.Count)
+                Dim PdfPCell As PdfPCell = Nothing
+                Dim column As Integer = 0
+                While column < dt.Columns.Count
+                    PdfPCell = New PdfPCell(New Phrase(New Chunk(dt.Columns(column).Caption, font8)))
+                    PdfTable.AddCell(PdfPCell)
+                    System.Math.Max(System.Threading.Interlocked.Increment(column), column - 1)
+                End While
+                Dim rows As Integer = 0
+                While rows < dt.Rows.Count
+                    ' Dim column As Integer = 0
+                    While column < dt.Columns.Count
+                        PdfPCell = New PdfPCell(New Phrase(New Chunk(dt.Rows(rows)(column).ToString(), font8)))
+                        PdfTable.AddCell(PdfPCell)
+                        System.Math.Max(System.Threading.Interlocked.Increment(column), column - 1)
+                    End While
+                    System.Math.Max(System.Threading.Interlocked.Increment(rows), rows - 1)
+                End While
+                PdfTable.SpacingBefore = 15.0F
+                pdfDoc.Add(PdfTable)
+                pdfDoc.Close()
+                pdfWriter.Close()
+                Response.ClearContent()
+                Response.ClearHeaders()
+                Response.ContentType = "application/pdf"
+                Response.AppendHeader("Content-Disposition", "attachment; filename=gridexport.pdf")
+                Response.BinaryWrite(pdfStream.ToArray())
+                ''Response.[End]()
+            Catch ex As Exception
+                MsgBox(ex.ToString)
+            End Try
+        End Sub
+ 
+
+Protected Function GetData() As DataTable
+            Try
+
+
+                ''If Session("EditDialogData") Is Nothing Then
+                ''Dim sqlConnection As New SqlConnection()
+                Dim connection As New ConnectionUtility
+                connection.Add_Conn()
+
+                MsgBox("Hello - - - - - - - ")
+                Dim sqlStatement As String = "SELECT * FROM Company_Arrival"
+                Dim sqlDataAdapter As New SqlDataAdapter(sqlStatement, connection.conn)
+                Dim dtResult As New DataTable()
+                Dim ds As New Data.Dataset
+                sqlDataAdapter.Fill(ds)
+                Session("EditDialogData") = ds.Tables(0)
+                Return dtResult
+                ''Return TryCast(Session("EditDialogData"), DataTable)
+                '' Else
+                '' Return TryCast(Session("EditDialogData"), DataTable)
+                '' End If
+            Catch ex As Exception
+                MsgBox(ex.ToString)
+            End Try
+        End Function
+
+        Protected Sub btn_submit_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_submit.Click
+            JQGrid1.DataSource = GetData()
+            JQGrid1.DataBind()
+        End Sub
+
+        Protected Sub Page_Load1(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+            JQGrid1.DataSource = GetData()
+            Dim dt As DataTable = GetData()
+            ExportToPDF(dt)
+            JQGrid1.DataBind()
+        End Sub
+
+    End Class
+End Namespace
+
+
+
+

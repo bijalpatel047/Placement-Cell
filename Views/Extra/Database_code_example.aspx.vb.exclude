@@ -1,0 +1,104 @@
+﻿Imports System.Data.SqlClient
+
+Partial Class Database_code_example
+    Inherits System.Web.UI.Page
+    Protected Sub btn_min_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_min.Click
+        Dim cnn As New SqlConnection("Data Source=.\SQLEXPRESS;AttachDbFilename=E:\Placement\App_Data\Database.mdf;Integrated Security=True;User Instance=True")
+        Dim str As String
+
+        Try
+            str = "Select Min(Semesters) from Courses"
+            Dim cmd As New SqlCommand
+            cmd.CommandType = Data.CommandType.Text
+            cmd.CommandText = str
+            cmd.Connection = cnn
+            cnn.Open()
+
+            lblans.Text = cmd.ExecuteScalar()
+            cnn.Close()
+
+        Catch ex As Exception
+            MsgBox(ex.ToString)
+        End Try
+    End Sub
+
+    Protected Sub btn_insert_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_insert.Click
+
+        Dim cnn As New SqlConnection("Data Source=.\SQLEXPRESS;AttachDbFilename=E:\Placement\App_Data\Database.mdf;Integrated Security=True;User Instance=True")
+        Dim str As String
+        Dim ans As Integer
+        Try
+            str = "Insert into User_Details values(@Login_Id,@First_Name,@Last_Name,@E_Mail,@Mobile_No)"
+
+            Dim cmd As New SqlCommand
+            cmd.CommandType = Data.CommandType.Text
+            cmd.CommandText = str
+            cmd.Connection = cnn
+            cmd.Parameters.Add("@Login_Id", Data.SqlDbType.VarChar)
+            cmd.Parameters.Add("@First_Name", Data.SqlDbType.VarChar)
+            cmd.Parameters.Add("@Last_Name", Data.SqlDbType.VarChar)
+            cmd.Parameters.Add("@E_Mail", Data.SqlDbType.VarChar)
+            cmd.Parameters.Add("@Mobile_No", Data.SqlDbType.VarChar)
+
+            cmd.Parameters.Item("@Login_Id").Value = txt_id.Text
+            cmd.Parameters.Item("@First_Name").Value = txt_first.Text
+            cmd.Parameters.Item("@Last_Name").Value = txt_last.Text
+            cmd.Parameters.Item("@E_Mail").Value = txt_mail.Text
+            cmd.Parameters.Item("@Mobile_No").Value = txt_mobile.Text
+
+            cnn.Open()
+            ans = cmd.ExecuteNonQuery
+            cnn.Close()
+            MsgBox("Yes record Inserted successfully " & ans)
+
+        Catch ex As Exception
+            MsgBox(ex.ToString)
+
+        End Try
+
+    End Sub
+
+    Protected Sub btn_select_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_select.Click
+        Dim cnn As New SqlConnection("Data Source=.\SQLEXPRESS;AttachDbFilename=E:\Placement\App_Data\Database.mdf;Integrated Security=True;User Instance=True")
+        Dim str As String
+
+        cnn.Open()
+        Dim cmd As New SqlCommand
+        Dim myreader As SqlDataReader
+        str = "select * from Courses"
+        cmd.CommandType = Data.CommandType.Text
+        cmd.CommandText = str
+        cmd.Connection = cnn
+        myreader = cmd.ExecuteReader(Data.CommandBehavior.CloseConnection)
+
+        GridView1.DataSource = myreader
+        GridView1.DataBind()
+
+        cnn.Close()
+
+    End Sub
+    'ERROR
+    '-------
+    'Dim cnn As New SqlConnection("Data Source=.\SQLEXPRESS;AttachDbFilename=D:\project\Placement_1\App_Data\Database.mdf;Integrated Security=True;User Instance=True")
+    'Dim str As String
+    'Dim ans As Integer
+
+    '    Try
+
+    'str = "Update User_Details set Last_Name=' " & txt_last.Text & " ' where Login_Id= " & txt_id.Text
+    '       str = "Delete from Courses where Course_Code=" & txt_code.Text
+
+    'Dim cmd As New SqlCommand
+    '        cmd.CommandType = Data.CommandType.Text
+    '        cmd.CommandText = str
+    '        cmd.Connection = cnn
+    '        cnn.Open()
+    '        ans = cmd.ExecuteNonQuery
+    '        cnn.Close()
+    '        MsgBox("Yes record Inserted successfully " & ans)
+
+    '    Catch ex As Exception
+    '        MsgBox(ex.ToString)
+
+    '    End Try
+End Class

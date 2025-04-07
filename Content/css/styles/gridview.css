@@ -1,0 +1,54 @@
+﻿.gridview
+{
+    border: 2px medium groove #0088CC;
+    width: 110%;
+}
+    
+        
+    .gridview tr th
+{
+    /* background:#0088CC ;
+       color:#fff;
+       height:25px;
+       font-weight:bold;*/
+    border-style: double;
+    background-color: #006DCC;
+    background-image: linear-gradient(to bottom, #0088CC, #33BEE5);
+    background-repeat: repeat-x;
+    border-color: #33BEE5;
+    color: #FFFFFF;
+    height: 10px;
+    font-weight: bold;
+    height: 20%;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+    
+    .gridview tr, .gridview tr td, .gridview tr th
+{
+    padding: 4px;
+}
+        
+  .gridview tr:nth-child(even)
+  {
+      background:#CCC;
+      color:#333;
+      }  
+      
+  .gridview tr:nth-child(odd)
+  {
+      background:#FFF;
+       color:#333;
+  }  
+      
+      
+  .gridview tr:nth-child(even):hover
+  {    
+      background:#999;
+       color:#333;
+  }
+  
+  .gridview tr:nth-child(odd):hover
+  {    
+      background:#333;
+       color:#fff;
+  }

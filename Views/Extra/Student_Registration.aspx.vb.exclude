@@ -1,0 +1,65 @@
+﻿Imports System.Net.Mail
+Imports System.Data.SqlClient
+Partial Class Student_Registration
+    Inherits System.Web.UI.Page
+    Protected Sub btn_submit_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_submit.Click
+        txt_student_id_1.Text = ddl_course.SelectedValue
+        txt_student_id_1.Text &= ddl_year.SelectedValue
+    End Sub
+    Protected Sub btn_create_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_create.Click
+        lbl_display_student_id.Text = txt_student_id_1.Text
+        lbl_display_student_id.Text &= txt_student_id_2.Text
+    End Sub
+    Protected Sub btn_register_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_register.Click
+
+        Dim msg As MailMessage = New MailMessage()
+
+        msg.Subject = "Your Login Id & Password"
+        msg.Body = " Now, You are able to login your account with this Id & Password." & vbCrLf & vbCrLf & "Login ID : " & lbl_display_student_id.Text & vbCrLf & "Password : " & txt_password.Text
+        msg.From = New MailAddress("ganesha241@gmail.com", "bijal")
+        msg.To.Add(New MailAddress(txt_email.Text))
+
+        Dim mysmtp As SmtpClient = New SmtpClient()
+
+        mysmtp.Send(msg)
+        MsgBox("Messgaae sent")
+
+        Dim cnn As New SqlConnection("Data Source=.\SQLEXPRESS;AttachDbFilename=E:\Placement\App_Data\Database.mdf;Integrated Security=True;User Instance=True")
+        Dim str As String
+        Dim ans As Integer
+        Try
+            str = "Insert into Login values(@Login_Id,@Password,@Type_of_Users,@Is_Active,@Is_Registered)"
+
+            Dim cmd As New SqlCommand
+            cmd.CommandType = Data.CommandType.Text
+            cmd.CommandText = str
+            cmd.Connection = cnn
+            cmd.Parameters.Add("@Login_Id", Data.SqlDbType.VarChar)
+            cmd.Parameters.Add("@Password", Data.SqlDbType.VarChar)
+            cmd.Parameters.Add("@Type_of_Users", Data.SqlDbType.Char)
+            cmd.Parameters.Add("@Is_Active", Data.SqlDbType.Bit)
+            cmd.Parameters.Add("@Is_Registered", Data.SqlDbType.Bit)
+
+            cmd.Parameters.Item("@Login_Id").Value = lbl_display_student_id.Text
+            cmd.Parameters.Item("@Password").Value = txt_password.Text
+            cmd.Parameters.Item("@Type_of_Users").Value = "S"
+            cmd.Parameters.Item("@Is_Active").Value = True
+            cmd.Parameters.Item("@Is_Registered").Value = False
+
+            cnn.Open()
+            ans = cmd.ExecuteNonQuery
+            cnn.Close()
+            MsgBox("Yes record Inserted successfully " & ans)
+
+        Catch ex As Exception
+            MsgBox(ex.ToString)
+
+        End Try
+
+    End Sub
+
+    Protected Sub btn_view_details_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btn_view_details.Click
+        GridView1.Visible = True
+    End Sub
+
+End Class
